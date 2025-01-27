@@ -11,11 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
-from .env import ENV
+import os
 
 import dj_database_url
-
+from .env import ENV
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-68(u!z(x2(k5$=2v)o42k!c&vejq28(_wzs91xvp1z2u(-9xwp"
+SECRET_KEY = (
+    "django-insecure-68(u!z(x2(k5$=2v)o42k!c&vejq28(_wzs91xvp1z2u(-9xwp"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,8 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-     "corsheaders",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -62,7 +62,6 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "https://chessconnect.vercel.app",
     "http://localhost:3000",
-    
 ]
 
 ROOT_URLCONF = "chess_manager.urls"
@@ -133,9 +132,17 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+
+# Media configuration
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+# Custome auth path
+AUTH_USER_MODEL = "core.User"
