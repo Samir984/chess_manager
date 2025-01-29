@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
+from .validator import validate_file_size
 
 
 # Custom User Manager
@@ -15,7 +16,7 @@ class CustomerUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        print("Create superuser custome manager running\n\n\n\n\n")
+        print("Create superuser custome manager running\n\n\n\n")
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -40,10 +41,11 @@ class User(AbstractUser):
         return self.get_full_name()
 
 
-
 class Report(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    image= models.ImageField(upload_to="report/")
+    image = models.ImageField(
+        upload_to="report/", validators=[validate_file_size]
+    )
     created_at = models.DateTimeField(auto_now_add=True)

@@ -174,3 +174,7 @@ celerybeat-schedule*
 !.elasticbeanstalk/*.global.yml
 
 *.db
+db.*
+
+
+.vercel

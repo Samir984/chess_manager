@@ -10,9 +10,7 @@ class Environment(BaseSettings):
     DATABASE_URL: str = (
         "postgresql://postgres:postgres@localhost:5432/smurfskins"
     )
-    
+    SECRET_KEY: str = "your-secret"
 
-
-   
 
 ENV = Environment()
