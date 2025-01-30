@@ -1,8 +1,11 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
+from django.forms import ModelForm
+from django.http.request import HttpRequest
 
 from .models import Report
+from .models import Token
 
 User = get_user_model()
 
@@ -25,6 +28,20 @@ class CustomUserAdmin(UserAdmin):
 
 
 @admin.register(Report)
-class ReportAdmin(admin.ModelAdmin):
+class ReportAdmin(admin.ModelAdmin[Report]):
     list_display = ["id", "user", "title", "image", "created_at"]
     search_fields = ["user", "title"]
+
+
+@admin.register(Token)
+class TokenAdmin(admin.ModelAdmin[Token]):
+    list_display = ["id", "user", "key"]
+    search_fields = ["user"]
+
+    def save_model(
+        self, request: HttpRequest, obj: Token, form: ModelForm, change: bool
+    ):
+        if request.user.is_superuser:  # type: ignore
+            super().save_model(request, obj, form, change)
+        else:
+            raise PermissionError("Only admin users can create tokens")

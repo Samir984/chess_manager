@@ -9,3 +9,11 @@ line-length = 79
 preview = true
 extend-exclude = "migrations"
 
+
+[tool.pyright]
+typeCheckingMode = "strict"
+include = ["chess_manager", "core"]
+exclude = ["**/migrations/**", "**/__pycache__/**"]
+reportMissingImports = true
+reportGeneralTypeIssues = true
+useLibraryCodeForTypes = true
