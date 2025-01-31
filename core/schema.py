@@ -22,14 +22,11 @@ class UserSchema(Schema):
     image: str | None
 
 
-class ReportSchema(ModelSchema):
+class ReportSchema(Schema):
     user_id: str
-    image: Optional[UploadedFile]  # Correct type annotation
-    
-    class Meta:
-        model = Report
-        fields = ['title', 'description', 'image']
-
+    title:str
+    description:str
+   
 
 
 class GenericSchema(Schema):

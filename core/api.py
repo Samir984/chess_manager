@@ -2,7 +2,8 @@ from typing import Optional
 from uuid import UUID
 
 from django.http.request import HttpRequest
-from ninja import NinjaAPI
+from ninja import NinjaAPI,Form,File
+from ninja.files import UploadedFile
 from ninja import Router
 
 from .models import User
@@ -71,18 +72,17 @@ def register(request: HttpRequest, data: RegisterUserSchema):
     return 201, GenericSchema(detail="User already exits.")
 
 
-@report.post("/create/",response={201:GenericSchema})
+@report.post("/",response={201:GenericSchema},auth=None)
 def create_report(
     request:HttpRequest,
-   payload:ReportSchema
-):
-    data=ReportSchema.__dict__
-    print(payload.image,data)
+   payload:Form[ReportSchema],
+    image: Optional[UploadedFile] = File(None) # type: ignore
+):   
     report = Report.objects.create(
         user_id=payload.user_id,
-        title=data["title"],
-        description=data["description"],
-        image=payload.image,  # Store the saved image path in DB
+        title=payload.title,
+        description=payload.description,
+        image=image,  # Store the saved image path in DB
     )
 
     print(report)
