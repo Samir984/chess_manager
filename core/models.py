@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
 
-from .validator import validate_file_size
+# from .validator import validate_file_size
 
 
 def get_default_token():
@@ -55,9 +55,9 @@ class Report(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    image = models.ImageField(
-        upload_to="report/", validators=[validate_file_size]
-    )
+    imageURL = models.URLField(null=True,blank=True)
+    public_id = models.CharField(max_length=255,null=True,blank=True)
+    is_solved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

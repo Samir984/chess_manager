@@ -27,10 +27,20 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = ((None, {"fields": ("email", "password1", "password2")}),)
 
 
+from django.utils.html import format_html
+
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin[Report]):
-    list_display = ["id", "user", "title", "image", "created_at"]
+    list_display = ["id", "user", "title", "imageLink", "is_solved", "created_at"]
     search_fields = ["user", "title"]
+    
+    @admin.display(description="imageURL")
+    def imageLink(self, obj:Report):
+        if obj.imageURL:
+         return format_html('<a href="{}" target="_blank">View Image</a>', obj.imageURL)
+        else:
+         return "-"
+    
 
 
 @admin.register(Token)

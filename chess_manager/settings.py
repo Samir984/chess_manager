@@ -16,6 +16,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 
+import cloudinary # type: ignore
 import dj_database_url
 
 from .env import ENV
@@ -34,7 +35,6 @@ DEBUG = ENV.DEBUG
 
 ALLOWED_HOSTS = [
     ".vercel.app",
-    "chessconnect.vercel.app",
     "localhost",
     "127.0.0.1",
 ]
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # Custome App
     "core",
+    'django_extensions',
     #
 ]
 
@@ -165,3 +166,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custome auth path
 AUTH_USER_MODEL = "core.User"
+
+# cloudinary config
+cloudinary.config( # type: ignore
+    cloud_name=ENV.CLOUD_NAME,
+    api_key=ENV.API_KEY,
+    api_secret=ENV.API_SECRET,
+    secure=True
+ 
+)

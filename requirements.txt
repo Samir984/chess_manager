@@ -1,5 +1,9 @@
 annotated-types==0.7.0
 asgiref==3.8.1
+black==25.1.0
+certifi==2025.1.31
+click==8.1.8
+cloudinary==1.42.1
 dj-database-url==2.3.0
 Django==5.1.5
 django-cors-headers==4.6.0
@@ -10,8 +14,11 @@ dnspython==2.7.0
 email_validator==2.2.0
 gunicorn==23.0.0
 idna==3.10
+mypy-extensions==1.0.0
 packaging==24.2
+pathspec==0.12.1
 pillow==11.1.0
+platformdirs==4.3.6
 psycopg2-binary==2.9.10
 pydantic==2.10.5
 pydantic-settings==2.7.1
@@ -23,5 +30,6 @@ types-psycopg2==2.9.21.20250121
 typing_extensions==4.12.2
 ua-parser==1.0.0
 ua-parser-builtins==0.18.0.post1
+urllib3==2.3.0
 user-agents==2.2.0
 whitenoise==6.8.2

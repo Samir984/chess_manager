@@ -1,10 +1,5 @@
-from typing import Optional
-
-from ninja import Schema,ModelSchema
-from ninja.files import UploadedFile
+from ninja import Schema
 from pydantic import EmailStr
-from .models import Report
-
 
 
 class RegisterUserSchema(Schema):
@@ -24,9 +19,8 @@ class UserSchema(Schema):
 
 class ReportSchema(Schema):
     user_id: str
-    title:str
-    description:str
-   
+    title: str
+    description: str
 
 
 class GenericSchema(Schema):

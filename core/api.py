@@ -2,7 +2,7 @@ from typing import Optional
 from uuid import UUID
 
 from django.http.request import HttpRequest
-from ninja import NinjaAPI,Form,File
+from ninja import NinjaAPI, Form, File
 from ninja.files import UploadedFile
 from ninja import Router
 
@@ -13,10 +13,11 @@ from .schema import RegisterUserSchema
 from .schema import ReportSchema
 from .schema import UserSchema
 from .security import TokenAuth
+from .utils import handle_upload_to_cloudinary
 
 token_auth = TokenAuth()
 
-api = NinjaAPI(docs_url="/docs/",auth=token_auth)
+api = NinjaAPI(docs_url="/docs/", auth=token_auth)
 users = Router()
 report = Router()
 
@@ -65,29 +66,40 @@ def register(request: HttpRequest, data: RegisterUserSchema):
             "image": data.image,
         },
     )
-    
+
     if created:
         return 201, GenericSchema(detail="User Create Successfully")
 
     return 201, GenericSchema(detail="User already exits.")
 
 
-@report.post("/",response={201:GenericSchema},auth=None)
+@report.post("/", response={201: GenericSchema, 400: GenericSchema}, auth=None)
 def create_report(
-    request:HttpRequest,
-   payload:Form[ReportSchema],
-    image: Optional[UploadedFile] = File(None) # type: ignore
-):   
+    request: HttpRequest,
+    payload: Form[ReportSchema],
+    image: Optional[UploadedFile] = File(None),  # type: ignore
+):  
+    print("enter")
+    public_id:str=""
+    secure_url:str=""
+    try:
+        if image:
+            res=handle_upload_to_cloudinary(image)
+            print(res["secure_url"])
+            public_id=res["public_id"]
+            secure_url=res["secure_url"]
+
+    except Exception as e:
+        print(e)
+        return 400, GenericSchema(detail="Error, {e}")
+
     report = Report.objects.create(
         user_id=payload.user_id,
         title=payload.title,
         description=payload.description,
-        image=image,  # Store the saved image path in DB
+        imageURL=secure_url,
+        public_id=public_id
     )
 
     print(report)
-    return 201 ,GenericSchema(detail="Report created successfully.")
-
-
-
-    
+    return 201, GenericSchema(detail="Report created successfully.")
