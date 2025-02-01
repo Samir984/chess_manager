@@ -173,5 +173,4 @@ cloudinary.config( # type: ignore
     api_key=ENV.API_KEY,
     api_secret=ENV.API_SECRET,
     secure=True
- 
 )

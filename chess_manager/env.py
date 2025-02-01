@@ -16,4 +16,3 @@ class Environment(BaseSettings):
 
 
 ENV = Environment()
-print(ENV)
