@@ -1,6 +1,7 @@
 from typing import Optional
 from uuid import UUID
 
+from django_ratelimit.decorators import ratelimit # type: ignore
 from django.http.request import HttpRequest
 from ninja import NinjaAPI, Form, File
 from ninja.files import UploadedFile
@@ -79,9 +80,15 @@ def create_report(
     payload: Form[ReportSchema],
     image: Optional[UploadedFile] = File(None),  # type: ignore
 ):  
-    print("enter")
+    
     public_id:str=""
     secure_url:str=""
+    report = Report(
+        user_id=payload.user_id,
+        title=payload.title,
+        description=payload.description,
+
+    )
     try:
         if image:
             res=handle_upload_to_cloudinary(image)
@@ -89,17 +96,15 @@ def create_report(
             public_id=res["public_id"]
             secure_url=res["secure_url"]
 
-    except Exception as e:
-        print(e)
-        return 400, GenericSchema(detail="Error, {e}")
+        report.imageURL = secure_url
+        report.public_id = public_id
+        report.save()
 
-    report = Report.objects.create(
-        user_id=payload.user_id,
-        title=payload.title,
-        description=payload.description,
-        imageURL=secure_url,
-        public_id=public_id
-    )
+
+    except Exception as e:
+        print(e,"eee")
+        return 400, GenericSchema(detail="Error, something went wrong, please try laterr")
+
 
     print(report)
     return 201, GenericSchema(detail="Report created successfully.")
