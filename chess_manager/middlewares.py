@@ -15,7 +15,6 @@ class RateLimitMiddleware:
             print("middle",ip,key)
  
             request_count = cache.get(key, 0)
-
            
             if request_count >= 2:  # Allow 2 requests per minute
                 return JsonResponse({"detail": "Rate limit exceeded. Try again later."}, status=429)
