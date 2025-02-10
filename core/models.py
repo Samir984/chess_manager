@@ -13,7 +13,6 @@ from .choices import Side
 
 # from .validator import validate_file_size
 
-
 def get_default_token():
     return secrets.token_hex(20)
 
@@ -49,16 +48,8 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
-
     objects = CustomerUserManager() # type: ignore
 
-
-    def save(self, *args:Any, **kwargs:dict[str, Any]):
-        if not self.pk:
-            super().save(*args, **kwargs) 
-            Profile.objects.create(user=self)  
-        else:
-            super().save(*args, **kwargs)  
 
 
     def __str__(self):
@@ -91,7 +82,7 @@ class Profile(models.Model):
         if point > 0:
             self.game_point += point
         elif point < 0:
-            self.game_point = max(0, self.game_point - point) 
+            self.game_point = max(0, self.game_point + point) 
         self.save(update_fields=['game_point'])
 
       
@@ -110,29 +101,30 @@ class Report(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+
 class Match(models.Model):
-    game_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    players = models.ManyToManyField(User, related_name='freematches') # type: ignore
-    player_1 = models.CharField(max_length=1,choices=Side.choices)
-    player_2 = models.CharField(max_length=1,choices=Side.choices)
-    game_id = models.CharField(max_length=255)
-    is_completed = models.BooleanField(default=False)
-    is_quit = models.BooleanField(default=False) 
-    is_bet = models.BooleanField(default=False)
-    bet_amount = models.DecimalField(default=Decimal("0.00"), max_digits=5, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
- 
-
-    def __str__(self):
-        return f"FreeMatch {self.game_id}"
-
-class MatchResult(models.Model):
-    game_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    winner_player = models.ForeignKey(User,on_delete=models.CASCADE)
-    winner_side = models.CharField(max_length=1,choices=Side.choices)
-    created_at = models.DateTimeField(auto_now_add=True)
-
+    id = models.UUIDField(primary_key=True, editable=False)
+    player_white = models.ForeignKey(User, related_name='pw_matches', on_delete=models.CASCADE)
+    player_black = models.ForeignKey(User, related_name='pb_matches', on_delete=models.CASCADE)
     
+    quitter_player = models.ForeignKey(User, related_name='q_matches', on_delete=models.CASCADE, blank=True, null=True)
+    winner_player = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="w_matches")
+    unexpected_leaver_player = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="ul_matches")  
+
+    bet_amount = models.DecimalField(default=Decimal("0.00"), max_digits=5, decimal_places=2)
+   
+    is_completed = models.BooleanField(default=False)
+    is_quit=models.BooleanField(default=False)
+    is_draw= models.BooleanField(default=False)
+    is_bet = models.BooleanField(default=False)
+    is_timeout= models.BooleanField(default=False)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    end_at=models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Match {self.id}"
+ 
     
 
 class Token(models.Model):

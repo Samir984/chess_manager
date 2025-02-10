@@ -1,19 +1,24 @@
 [tool.isort]
 src_paths = ["."]
+line_length = 79
+skip = ["migrations"]
+
 
 line_length = 79
 force_single_line = true
 
 [tool.black]
+force-exclude = '/(migrations)/'
 line-length = 79
 preview = true
-extend-exclude = "migrations"
+
 
 
 [tool.pyright]
 typeCheckingMode = "strict"
+venv = "venv"
 include = ["chess_manager", "core"]
-exclude = ["**/migrations/**", "**/__pycache__/**"]
+exclude = ["**/venv", "**/migrations"]
 reportMissingImports = true
 reportGeneralTypeIssues = true
 useLibraryCodeForTypes = true
