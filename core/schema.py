@@ -41,6 +41,7 @@ class MatchUpdateSchema(Schema):
     is_completed:Optional[bool]=None
     is_draw:Optional[bool]=None
     is_timeout:Optional[bool]=None
+    is_left:Optional[bool]=None
 
     
 

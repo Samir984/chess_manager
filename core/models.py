@@ -92,7 +92,7 @@ class Profile(models.Model):
 
 
 class Report(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="reports")
     title = models.CharField(max_length=255)
     description = models.TextField()
     imageURL = models.URLField(null=True,blank=True)
@@ -112,7 +112,8 @@ class Match(models.Model):
     unexpected_leaver_player = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="ul_matches")  
 
     bet_amount = models.DecimalField(default=Decimal("0.00"), max_digits=5, decimal_places=2)
-   
+
+    is_left= models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     is_quit=models.BooleanField(default=False)
     is_draw= models.BooleanField(default=False)
@@ -124,6 +125,14 @@ class Match(models.Model):
     
     def __str__(self):
         return f"Match {self.id}"
+
+
+class Transaction(models.Model):
+   user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="transcations")
+   amount = models.DecimalField(default=Decimal("0.00"),max_digits=5, decimal_places=2)
+   description = models.CharField(default="",max_length=255)
+    
+ 
  
     
 

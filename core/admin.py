@@ -1,13 +1,17 @@
 from django.contrib import admin
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin
 from django.forms import ModelForm
+from django.db import transaction
 from django.http.request import HttpRequest
 
 from .models import Report
 from .models import Profile
 from .models import Match
+from .models import Transaction
 
 
 
@@ -61,8 +65,24 @@ class MatchAdmin(admin.ModelAdmin[Match]):
     search_fields = ["id","player_white", "player_black"]
     list_filter = ["is_completed", "is_quit", "is_bet", "is_draw"]
 
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin[Transaction]):
+    list_display = ["id", "user", "amount","description"]
+    search_fields = ["user","amount"]
 
+    def save_model(self, request:HttpRequest, obj:Transaction, form:ModelForm, change:bool):
+        user=obj.user
+        if not request.user.is_superuser:
+            raise PermissionDenied(_("Only superusers can add or modify transactions."))
+        
+        if obj.amount > 1000:
+            raise PermissionDenied(_("Transaction amount cannot exceed $1000."))
 
+        
+        with transaction.atomic():
+            user.profile.coins = user.profile.coins + obj.amount
+            user.profile.save()
+            super().save_model(request, obj, form, change)
 
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin[Token]):
@@ -75,4 +95,4 @@ class TokenAdmin(admin.ModelAdmin[Token]):
         if request.user.is_superuser:  # type: ignore
             super().save_model(request, obj, form, change)
         else:
-            raise PermissionError("Only admin users can create tokens")
+            raise PermissionDenied("Only admin users can create tokens")
