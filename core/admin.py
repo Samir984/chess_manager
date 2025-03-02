@@ -24,7 +24,7 @@ User = get_user_model()
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ["id", "email", "first_name", "last_name", "is_staff"]
+    list_display = ["id", "email", "first_name", "last_name", "is_staff","image"]
     search_fields = ["email"]
     ordering = ["email"]
 

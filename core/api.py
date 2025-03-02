@@ -4,6 +4,7 @@ from uuid import UUID
 from django.db import transaction
 from django_ratelimit.decorators import ratelimit # type: ignore
 from django.http.request import HttpRequest
+from django.db.models import Count, Q
 from ninja import NinjaAPI, Form, File
 from ninja.files import UploadedFile
 from ninja import Router
@@ -13,12 +14,12 @@ from .models import Match
 from .models import Profile
 
 
-
 from .models import Report
 from .schema import GenericSchema
 from .schema import RegisterUserSchema
 from .schema import ReportSchema
 from .schema import UserSchema
+from .schema import ProfileSchema
 from .schema import MatchCreateSchema,MatchUpdateSchema
 from .security import TokenAuth
 from .utils import handle_upload_to_cloudinary
@@ -27,6 +28,8 @@ token_auth = TokenAuth()
 
 api = NinjaAPI(docs_url="/docs/", auth=token_auth)
 users = Router()
+profiles = Router()
+
 matches = Router()
 
 
@@ -34,6 +37,7 @@ reports = Router()
 
 
 api.add_router("/users/", users, tags=["users"])
+api.add_router("/profiles/", profiles, tags=["profiles"])
 api.add_router("/matches/", matches, tags=["matches"])
 api.add_router("/reports/", reports, tags=["reports"])
 
@@ -66,7 +70,7 @@ def get_user(
         )
     else:
         return 404, GenericSchema(detail="User doen't exits.")
-
+    
 
 @users.post("/register/", response={201: GenericSchema})
 def register(request: HttpRequest, data: RegisterUserSchema):
@@ -85,6 +89,28 @@ def register(request: HttpRequest, data: RegisterUserSchema):
         return 201, GenericSchema(detail="User Create Successfully")
 
     return 201, GenericSchema(detail="User already exits.")
+
+
+
+@profiles.get("/{user_id}/", response={200: ProfileSchema, 400: GenericSchema})
+def get_user(
+    request: HttpRequest,
+    user_id: str
+):
+    print("inside profile66",user_id)
+    if not user_id:
+        return 400, GenericSchema(detail="User_id is required.")
+    
+    profile = Profile.objects.filter(user_id=user_id).select_related("user").annotate(won_matches_count=Count("user__w_matches")).first()
+    print(profile.won_matches_count
+          ,"profile")
+    if profile is None:
+        return 400, GenericSchema(detail="Profile not found.")
+
+    return 200, profile
+
+  
+
 
 @matches.post("/", response={201: GenericSchema, 400: GenericSchema})
 def create_match(request: HttpRequest, data: MatchCreateSchema):

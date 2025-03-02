@@ -23,6 +23,19 @@ class UserSchema(Schema):
     image: str | None
 
 
+class ProfileSchema(ModelSchema):
+    first_name: str = Field(..., alias="user.first_name")
+    last_name: str = Field(..., alias="user.last_name")
+    image_url: Optional[str] = Field(None, alias="user.image")  # Allow None values
+    email: str = Field(..., alias="user.email")
+    won_matches_count:int
+
+    class Meta:
+        model = models.Profile
+        fields = ["user", "no_of_games_played", "coins", "game_point"]
+
+    
+
 
 class MatchCreateSchema(Schema):
     game_id:UUID
